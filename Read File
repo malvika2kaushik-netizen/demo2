@@ -1,0 +1,88 @@
+import csv
+rows = [ ["name", "marks"],
+    ["Asha", 82],
+    ["Ravi", 45],
+    ["Meera", 67],
+    ["John", 38],
+    ["Priya", 91],
+    ["Sam", 59],
+    ["Lina", 74],]
+
+with open("results.csv", "w", newline="") as f:
+    csv.writer(f).writerows(rows)
+
+def load_students(filename):
+  stud=[]
+  with open(filename,"r") as f:
+    reader=csv.DictReader(f)
+    for row in reader:
+      row["marks"]=int(row["marks"])
+      stud.append(row)
+  return stud
+
+print(load_students("results.csv"))
+def get_grade(marks):
+    if marks >= 75:
+        return "Distinction"
+    elif marks >= 60:
+        return "Merit"
+    elif marks >= 40:
+        return "Pass"
+    else:
+        return "Fail"
+
+
+
+
+
+
+
+ 
+for s in load_students("results.csv"):
+    print(f"{s['name']}: {s['marks']} - {get_grade(s['marks'])}")
+
+def summarise(students):
+    marks = [s["marks"] for s in students]   # list comprehension from Lesson 3
+
+    # 1. find the top student: use the "best so far" pattern on dictionaries
+    top = students[0]
+    for s in students:
+        if top["marks"]< s["marks"]:
+          top=s
+    
+          
+
+    # 2. count passes
+    passed = 0
+    for s in students:
+      if s["marks"]>=40:
+        passed=passed+1
+    
+
+    return {
+        "average": sum(marks) / len(marks),
+        "top_student": top["name"],
+        "lowest": min(marks),
+        "passed": passed,
+    }
+
+
+print(summarise(load_students("results.csv")))
+
+def write_report(summary, filename):
+    with open(filename, "w") as f:
+        f.write("Student Results Report\n")
+        f.write("======================\n")
+        f.write(f"Average mark: {summary['average']}\n")
+        f.write(f"TOP STUDENT {summary['top_student']}\n")
+        f.write(f"lowest marks {summary['lowest']}\n")
+        f.write(f"number passed {summary['passed']}\n")
+        # add the lines for top student, lowest mark and number passed
+try:
+    students = load_students("results.csv")
+except FileNotFoundError:
+    print("results.csv not found. Check the file name.")
+else:
+    summary = summarise(students)
+    write_report(summary, "report.txt")
+    print("Report saved to report.txt")
