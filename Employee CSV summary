@@ -1,0 +1,78 @@
+import csv
+rows = [
+    ["name", "department", "city", "salary", "years"],
+    ["Anita", "IT", "Leeds", 42000, 5],
+    ["Ben", "IT", "London", 55000, 8],
+    ["Chloe", "HR", "Leeds", 36000, 3],
+    ["David", "HR", "London", 41000, 6],
+    ["Esha", "Finance", "London", 62000, 10],
+    ["Frank", "Finance", "Leeds", 48000, 4],
+    ["Grace", "IT", "Leeds", 39000, 2],
+    ["Hari", "Finance", "London", 70000, 12],["Tom", "IT", "Leeds", "abc", 1]
+]
+with open("employees.csv",'w',newline="") as f:
+  writer=csv.writer(f)
+  writer.writerows(rows)
+  
+def load_employees(filename):
+  yr=[]
+  try: 
+     with open(filename,'r') as f:
+      reader=csv.DictReader(f)
+      for r  in reader:
+         try:
+            r["years"]=int(r["years"])
+            r["salary"]=int(r["salary"])
+      
+            yr.append(r)
+      
+         except ValueError:
+            print(f"Skipping {r["name"]} : invalid salary.")
+            continue
+  except FileNotFoundError:
+      print("file does not exist")
+    
+  return yr
+
+def save_report(employees, filename):
+  with open(filename,'w',newline="") as f:
+   
+    for data in employees:
+      f.write(f"{data['name']}-{data["department"]}-${data["salary"]:,}")
+  return filename
+def highest_salary(yr):
+    high = yr[0]
+    for i in yr:
+     if high["salary"]<i["salary"]:
+      high=i
+    return high["name"]
+def average_salary_by_department(employees):
+  sum_dept={}
+  count={}
+  for a in employees:
+    dept = a["department"]
+    sum_dept[dept]=sum_dept.get(dept,0)+a["salary"]
+    count[dept]=count.get(dept,0)+1
+  
+  average={}
+  for dept in sum_dept:
+
+    average[dept]=round(sum_dept[dept]/count[dept],2)
+  return average
+def count(employees):
+  count={}
+  for emp in employees:
+    dept = emp["department"]
+    count[dept]=count.get(dept,0)+1
+  return count
+
+
+employees=load_employees("employees.csv")
+
+result=save_report(employees, "employee_report.txt is ready")
+print(result)
+print("---------SUMMARY IS READY ---------")
+print(f"Average salary per Department :{average_salary_by_department(employees)}")
+print(f"Highest Paid{highest_salary(employees)}")
+print(f"HEADcount per department:{count(employees)}")
+print(load_employees("abc.csv"))
